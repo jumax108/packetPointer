@@ -1,3 +1,6 @@
+
+#include "objectFreeListTLS/headers/objectFreeListTLS.h"
+
 #include "headers/packetPointer.h"
 
 CObjectFreeListTLS<stPacket>* CPacketPointer::
@@ -26,6 +29,8 @@ CPacketPointer::~CPacketPointer(){
 	
 	int ref = InterlockedDecrement((LONG*)&_packet->_ref);
 	if(ref == 0){
+		_packet->_buffer.rearSetZero();
+		_packet->_buffer.frontSetZero();
 		_freeList->freeObject(_packet);
 		_packet = nullptr;
 	}

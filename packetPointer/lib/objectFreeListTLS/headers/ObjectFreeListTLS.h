@@ -1,6 +1,7 @@
 #pragma once
 
-#include "objectFreeList\headers\ObjectFreeList.h"
+#include "objectFreeList\headers\objectFreeList.h"
+
 #include "common.h"
 
 #if defined(OBJECT_FREE_LIST_TLS_SAFE)
@@ -193,8 +194,8 @@ void CObjectFreeListTLS<T>::_freeObject(T* object
 
 	///////////////////////////////////////////////////////////////////////
 	// 청크의 모든 요소가 사용 완료(할당 후 반환)되었다면 청크를 반환
-	chunk->_leftFreeCnt -= 1;
-	if(chunk->_leftFreeCnt == 0){
+	int leftFreeCnt = InterlockedDecrement((LONG*)&chunk->_leftFreeCnt);
+	if(leftFreeCnt == 0){
 		chunk->_leftFreeCnt = chunk->_nodeNum;
 		chunk->_allocNode = chunk->_nodes;
 		_centerFreeList->freeObject(chunk);
@@ -216,7 +217,6 @@ unsigned int CObjectFreeListTLS<T>::getCapacity(){
 
 }
 
-#pragma pack(1)
 template <typename T>
 struct stAllocTlsNode{
 	
@@ -244,7 +244,6 @@ struct stAllocTlsNode{
 
 	void init(stAllocChunk<T>* afflicatedChunk);
 };
-#pragma pack()
 
 template <typename T>
 void stAllocTlsNode<T>::init(stAllocChunk<T>* afflicatedChunk){

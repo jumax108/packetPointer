@@ -1,3 +1,5 @@
+#include "../lib/objectFreeListTLS/headers/objectFreeListTLS.h"
+
 #include "../headers/packetPointer.h"
 #pragma comment(lib, "../release/packetPointer")
 
