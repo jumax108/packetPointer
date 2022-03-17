@@ -6,18 +6,34 @@
 CObjectFreeListTLS<stPacket>* CPacketPointer::
 	_freeList = new CObjectFreeListTLS<stPacket> (false, false);
 
+CPacketPointer::CPacketPointer(){
+	_packet = _freeList->allocObject();
+	_packet->_ref = 1;
+}
 
 CPacketPointer::CPacketPointer(CPacketPointer& ptr){
+	
 	_packet = ptr._packet;
+
 	#ifdef PACKET_PTR_REF_AUTO
 		InterlockedIncrement((long*)&_packet->_ref);
 	#endif
 }
 CPacketPointer& CPacketPointer::operator=(CPacketPointer& ptr){
+
+	// 갖고 있는 데이터가 있으면 ref 감소
+	#ifdef PACKET_PTR_REF_AUTO
+		if(_packet != nullptr){
+			this->~CPacketPointer();
+		}
+	#endif
+
 	_packet = ptr._packet;
+
 	#ifdef PACKET_PTR_REF_AUTO
 		InterlockedIncrement((long*)&_packet->_ref);
 	#endif
+
 	return *this;
 }
 
@@ -43,7 +59,7 @@ void CPacketPointer::incRef(){
 		return ;
 	#endif
 	
-	int ref = InterlockedIncrement((LONG*)&_packet->_ref);
+	InterlockedIncrement((LONG*)&_packet->_ref);
 }
 
 void CPacketPointer::decRef(){
@@ -54,7 +70,9 @@ void CPacketPointer::decRef(){
 	
 	int ref = InterlockedDecrement((LONG*)&_packet->_ref);
 	if(ref == 0){
-		delete _packet;
+		_packet->_buffer.rearSetZero();
+		_packet->_buffer.frontSetZero();
+		_freeList->freeObject(_packet);
 		_packet = nullptr;
 	}
 

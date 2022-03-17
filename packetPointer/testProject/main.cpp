@@ -17,6 +17,10 @@ public:
 int main(){
 
 	CTestPacketPointer pt;
+	CTestPacketPointer ab;
+	ab = pt;
+
+	ab << 6546;
 
 	pt << 123 << 456;
 
@@ -24,6 +28,9 @@ int main(){
 	pt >> a >> b;
 
 	printf("%d %d\n",a, b);
+
+
+
 
 
 	return 0;
