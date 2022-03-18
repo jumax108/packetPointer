@@ -1,3 +1,0 @@
-constexpr int PROTOCOL_BUFFER_SIZE = 10;
-
-//#define PACKET_PTR_REF_AUTO

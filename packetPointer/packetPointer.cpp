@@ -9,6 +9,10 @@ CObjectFreeListTLS<stPacket>* CPacketPointer::
 CPacketPointer::CPacketPointer(){
 	_packet = _freeList->allocObject();
 	_packet->_ref = 1;
+
+	#if defined(PACKET_PTR_DEBUG)
+		_packet->returnAdr = _ReturnAddress();
+	#endif
 }
 
 CPacketPointer::CPacketPointer(CPacketPointer& ptr){
