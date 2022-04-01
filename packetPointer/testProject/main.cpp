@@ -14,20 +14,43 @@ public:
 
 };
 
+void test(){
+	
+	{
+		CTestPacketPointer pt;
+		int k = 1;
+	}
+
+
+}
+
 int main(){
 
-	CTestPacketPointer pt;
-	CTestPacketPointer ab;
-	ab = pt;
+	{
+		CTestPacketPointer pt;
+		pt << 111;
+		int a;
+		pt >> a;
+	}
+	
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
+	test();
 
-	ab << 6546;
-
-	pt << 123 << 456;
-
-	int a , b;
-	pt >> a >> b;
-
-	printf("%d %d\n",a, b);
 
 
 

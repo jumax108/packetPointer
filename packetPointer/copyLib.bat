@@ -1,8 +1,13 @@
 
-mkdir packetPointer
+set name="packetPointer"
 
-robocopy headers packetPointer/headers
-robocopy release packetPointer *.pdb
-robocopy release packetPointer *.lib
+mkdir %name%
+
+robocopy headers %name%/headers
+robocopy release %name% *.pdb
+robocopy release %name% *.lib
+
+erase release /S /Q
+rd release /S /Q
 
 pause

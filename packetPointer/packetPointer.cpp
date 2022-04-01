@@ -3,15 +3,16 @@
 
 #include "headers/packetPointer.h"
 
-CObjectFreeListTLS<stPacket>* CPacketPointer::
-	_freeList = new CObjectFreeListTLS<stPacket> (false, false);
+CObjectFreeListTLS<stPacket> CPacketPointer::
+	_freeList(false, false);
 
 CPacketPointer::CPacketPointer(){
-	_packet = _freeList->allocObject();
+	_packet = _freeList.allocObjectTLS();
 	_packet->_ref = 1;
 
 	#if defined(PACKET_PTR_DEBUG)
 		_packet->returnAdr = _ReturnAddress();
+		_packet->_packetPtr = this;
 	#endif
 }
 
@@ -51,7 +52,7 @@ CPacketPointer::~CPacketPointer(){
 	if(ref == 0){
 		_packet->_buffer.rearSetZero();
 		_packet->_buffer.frontSetZero();
-		_freeList->freeObject(_packet);
+		_freeList.freeObjectTLS(_packet);
 		_packet = nullptr;
 	}
 
@@ -76,7 +77,7 @@ void CPacketPointer::decRef(){
 	if(ref == 0){
 		_packet->_buffer.rearSetZero();
 		_packet->_buffer.frontSetZero();
-		_freeList->freeObject(_packet);
+		_freeList.freeObjectTLS(_packet);
 		_packet = nullptr;
 	}
 
@@ -94,7 +95,7 @@ bool CPacketPointer::checkBufferSize(int size){
 
 unsigned __int64 CPacketPointer::getPacketPoolUsage(){
 
-	return CPacketPointer::_freeList->getCapacity();
+	return CPacketPointer::_freeList.getCapacity();
 
 }
 
