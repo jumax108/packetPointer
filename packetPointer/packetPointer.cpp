@@ -7,7 +7,7 @@ CObjectFreeListTLS<stPacket> CPacketPointer::
 	_freeList(false, false);
 
 CPacketPointer::CPacketPointer(){
-	_packet = _freeList.allocObjectTLS();
+	_packet = _freeList.allocObject();
 	_packet->_ref = 1;
 
 	#if defined(PACKET_PTR_DEBUG)
@@ -50,9 +50,9 @@ CPacketPointer::~CPacketPointer(){
 	
 	int ref = InterlockedDecrement((LONG*)&_packet->_ref);
 	if(ref == 0){
-		_packet->_buffer.rearSetZero();
-		_packet->_buffer.frontSetZero();
-		_freeList.freeObjectTLS(_packet);
+		_packet->_buffer.clear();
+		_packet->_incoded = false;
+		_freeList.freeObject(_packet);
 		_packet = nullptr;
 	}
 
@@ -75,9 +75,9 @@ void CPacketPointer::decRef(){
 	
 	int ref = InterlockedDecrement((LONG*)&_packet->_ref);
 	if(ref == 0){
-		_packet->_buffer.rearSetZero();
-		_packet->_buffer.frontSetZero();
-		_freeList.freeObjectTLS(_packet);
+		_packet->_buffer.clear();
+		_packet->_incoded = false;
+		_freeList.freeObject(_packet);
 		_packet = nullptr;
 	}
 
